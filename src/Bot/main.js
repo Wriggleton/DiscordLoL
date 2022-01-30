@@ -13,6 +13,7 @@ client.on("messageCreate", async msg => {
 
     const [success, replyMessage] = await manager.execute(msg);
     if (replyMessage) {
+        msg.react(success ? "✅" : "❌");
         msg.reply(replyMessage);
     }
 })
