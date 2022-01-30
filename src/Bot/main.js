@@ -18,8 +18,13 @@ client.on("messageCreate", async msg => {
 
   if (command === "summonerlevel") {
       const summonerName = args[0];
-      const level = await getSummonerLevel(summonerName);
-      msg.reply(`Current summoner level for ${summonerName} is ${level}!`);              
+      const [success, level] = await getSummonerLevel(summonerName);
+      if (success) {
+        msg.reply(`Current summoner level for ${summonerName} is ${level}!`); 
+      }
+      else {
+        msg.reply(`No such summoner: ${summonerName}!`);
+      }            
   } 
 })
 
