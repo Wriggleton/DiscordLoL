@@ -1,4 +1,5 @@
 const registerCommand = require("../commands/registerCommand");
+const latestMatchCommand = require("../commands/latestMatchCommand");
 
 const lolData = {
     players: []
@@ -6,6 +7,7 @@ const lolData = {
 
 const commandList = [];
 commandList.push(registerCommand);
+commandList.push(latestMatchCommand);
 
 const manager = {
     execute: async (commandName, arguments) => {

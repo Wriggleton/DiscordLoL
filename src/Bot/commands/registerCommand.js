@@ -4,7 +4,7 @@ async function registerSummoner(lolData, args) {
     if (!Array.isArray(args) || args.length === 0) return [false, "Invalid arguments."];
     const name = args[0];
     try {
-        const [success, data] = await call("/lol/summoner/v4/summoners/by-name/" + name);
+        const [success, data] = await call(`/lol/summoner/v4/summoners/by-name/${name}`, { useSpecific: true });
         if (!success) {
             return [false, "API call failed."];
         }
