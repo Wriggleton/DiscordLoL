@@ -1,6 +1,6 @@
-const { call } = require ("../services/lolClient");
+const { call } = require ("../services/lol/client");
 
-async function registerSummoner(lolData, args) {
+async function registerSummoner(lolData, args, msg) {
     if (!Array.isArray(args) || args.length === 0) return [false, "Invalid arguments."];
     const name = args[0];
     try {
@@ -16,7 +16,8 @@ async function registerSummoner(lolData, args) {
 
         lolData.players.push({
             puuid: puuid,
-            name: data.name
+            name: data.name,
+            channelId: msg.channelId
         });
         return [true, `Successfully registered Summoner ${name}.`];
     } catch (error) {
