@@ -14,7 +14,6 @@ const manager = {
         const command = commandList.find(cmd => cmd.commandName === commandName);
         if (command) {
             const result = await command.action(lolData, arguments);
-            console.log(lolData);
             return result;
         }
 
