@@ -52,7 +52,9 @@ async function getLatestMatches(client, lolData) {
 
         const allPlayers = players.join(", ");
         channels.forEach(channel => {
-            client.channels.cache.get(channel).send(`[${allPlayers}] Last game started at ${new Date(info.gameCreation).toLocaleString("nl-NL")} and lasted ${info.gameDuration / 60} minutes.`);
+            const minutes = Math.floor(info.gameDuration / 60);
+            const seconds = info.gameDuration % 60;
+            client.channels.cache.get(channel).send(`[${allPlayers}] Last game started at ${new Date(info.gameCreation).toLocaleString("nl-NL")} and lasted ${minutes} minutes and ${seconds} second(s).`);
         })
     })
 }
