@@ -14,15 +14,19 @@ client.on("messageCreate", async msg => {
     const [success, replyMessage, embed] = await manager.execute(msg);
     if (replyMessage) {
         msg.react(success ? "✅" : "❌");
+        const reply = { 
+            content: replyMessage             
+        };
 
-        msg.reply({ 
-            content: replyMessage,
-            embeds: [embed]               
-        });
+        if (embed) {
+            reply.embeds = [embed];
+        }
+
+        msg.reply(reply);
     }
 })
 
-client.login(process.env.DISCORD_TOKEN)
+client.login(process.env.DISCORD_TOKEN);
 
 setInterval(async () => {
     console.log("Running tasks...");

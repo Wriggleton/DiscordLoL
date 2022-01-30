@@ -1,4 +1,6 @@
 const { getLatestMatchId, getLatestMatchDetails } = require("../services/lol/matchService");
+const { MessageEmbed } = require("discord.js");
+const { properRole } = require("../helpers/lol/naming");
 
 const reportedMatchesForPlayers = [];
 
@@ -42,7 +44,7 @@ async function getLatestMatches(client, lolData) {
                     channels.push(existingPlayer.channelId);
                 }
 
-                players.push(existingPlayer.name);
+                players.push(participant);
                 reportedMatchesForPlayers.push({
                     matchId: matchToReport,
                     puuid: existingPlayer.puuid
@@ -50,11 +52,27 @@ async function getLatestMatches(client, lolData) {
             }
         });
 
-        const allPlayers = players.join(", ");
         channels.forEach(channel => {
             const minutes = Math.floor(info.gameDuration / 60);
             const seconds = info.gameDuration % 60;
-            client.channels.cache.get(channel).send(`[${allPlayers}] Last game started at ${new Date(info.gameCreation).toLocaleString("nl-NL")} and lasted ${minutes} minutes and ${seconds} second(s).`);
+
+            let embed = new MessageEmbed()
+            .setTitle(`Last game played at ${new Date(info.gameCreation).toLocaleString("nl-NL")}`)
+            .addField("Duration", `${minutes} minutes and ${seconds} second(s)`)
+            .setThumbnail(`https://ddragon.leagueoflegends.com/cdn/12.2.1/img/map/map${info.mapId}.png`)
+            .setImage("https://ddragon.leagueoflegends.com/cdn/12.2.1/img/champion/Nautilus.png");
+
+            for (const player of players) {
+                embed = embed.addField(
+                    `${player.summonerName} (${properRole(player.individualPosition)})`, 
+                    `${player.championName} - level ${player.champLevel}
+                    ${player.kills} kill(s), ${player.deaths} death(s), ${player.assists} assist(s)
+                    ${player.win ? "Won" : "Lost"} the game ${player.win ? "🥳" : "😭"}.`);
+            }
+
+            embed = embed.addField("\u200b", "\u200b").addField("MVP", "Nautilus");
+            client.channels.cache.get(channel).send({ embeds: [embed] });
+            //client.channels.cache.get(channel).send(`[${allPlayers}] Last game started at ${new Date(info.gameCreation).toLocaleString("nl-NL")} and lasted ${minutes} minutes and ${seconds} second(s).`);
         })
     })
 }

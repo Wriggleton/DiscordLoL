@@ -23,7 +23,7 @@ async function registerSummoner(lolData, args, msg) {
         title: data.name,
         description: `Summoner level ${data.summonerLevel}`,
         thumbnail: {
-            url: `http://ddragon.leagueoflegends.com/cdn/12.2.1/img/profileicon/${data.profileIconId}.png`
+            url: `https://ddragon.leagueoflegends.com/cdn/12.2.1/img/profileicon/${data.profileIconId}.png`
         },
     };
 
