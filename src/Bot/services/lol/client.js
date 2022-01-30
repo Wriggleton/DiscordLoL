@@ -15,6 +15,7 @@ const call = async (url, options = { params: null, useSpecific: false }) => {
 
     return [true, response.data];
   } catch (error) {
+    console.log(`API call failed for URL ${url}`);
     return [false, null];
   }
 };

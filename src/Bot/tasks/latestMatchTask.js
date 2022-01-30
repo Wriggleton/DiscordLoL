@@ -1,4 +1,7 @@
 const { getLatestMatchId, getLatestMatchDetails } = require("../services/lol/matchService");
+const { MessageEmbed } = require("discord.js");
+const { properRole } = require("../helpers/lol/naming");
+const { getRelevantRoleStats } = require("../helpers/lol/roleStats");
 
 const reportedMatchesForPlayers = [];
 
@@ -42,7 +45,7 @@ async function getLatestMatches(client, lolData) {
                     channels.push(existingPlayer.channelId);
                 }
 
-                players.push(existingPlayer.name);
+                players.push(participant);
                 reportedMatchesForPlayers.push({
                     matchId: matchToReport,
                     puuid: existingPlayer.puuid
@@ -50,9 +53,36 @@ async function getLatestMatches(client, lolData) {
             }
         });
 
-        const allPlayers = players.join(", ");
         channels.forEach(channel => {
-            client.channels.cache.get(channel).send(`[${allPlayers}] Last game started at ${new Date(info.gameCreation).toLocaleString("nl-NL")} and lasted ${info.gameDuration / 60} minutes.`);
+            const minutes = Math.floor(info.gameDuration / 60);
+            const seconds = info.gameDuration % 60;
+
+            let embed = new MessageEmbed()
+            .setTitle(`Last game played at ${new Date(info.gameCreation).toLocaleString("nl-NL")}`)
+            .addField("Duration", `${minutes} minutes and ${seconds} second(s)`)
+            .setThumbnail(`https://ddragon.leagueoflegends.com/cdn/12.2.1/img/map/map${info.mapId}.png`);
+
+            for (const player of players) {
+                embed = embed.addField(
+                    `${player.summonerName} (${properRole(player.individualPosition)})`, 
+                    `${player.championName} - level ${player.champLevel}
+                    ${player.kills} kill(s), ${player.deaths} death(s), ${player.assists} assist(s)
+                    ${getRelevantRoleStats(player)}
+                    ${player.win ? "Won" : "Lost"} the game ${player.win ? "🥳" : "😭"}`);
+            }
+
+            let randomChampion = players[0];
+            if (players.length > 1) {
+                const rand = Math.floor(Math.random() * (players.length - 1 + 1));
+                randomChampion = players[rand];
+            }
+
+            embed = embed
+                .setImage(`https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${randomChampion.championName}_0.jpg`)
+                .addField("\u200b", "\u200b")
+                .addField("MVP", `${randomChampion.summonerName} as ${randomChampion.championName}`);
+            client.channels.cache.get(channel).send({ embeds: [embed] });
+            //client.channels.cache.get(channel).send(`[${allPlayers}] Last game started at ${new Date(info.gameCreation).toLocaleString("nl-NL")} and lasted ${minutes} minutes and ${seconds} second(s).`);
         })
     })
 }

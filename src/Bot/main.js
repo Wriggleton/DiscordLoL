@@ -11,15 +11,24 @@ client.on("ready", () => {
 client.on("messageCreate", async msg => {
     if (msg.author.bot) return;
 
-    const [success, replyMessage] = await manager.execute(msg);
+    const [success, replyMessage, embed] = await manager.execute(msg);
     if (replyMessage) {
-        msg.reply(replyMessage);
+        msg.react(success ? "✅" : "❌");
+        const reply = { 
+            content: replyMessage             
+        };
+
+        if (embed) {
+            reply.embeds = [embed];
+        }
+
+        msg.reply(reply);
     }
 })
 
-client.login(process.env.DISCORD_TOKEN)
+client.login(process.env.DISCORD_TOKEN);
 
 setInterval(async () => {
     console.log("Running tasks...");
     await getLatestMatchesTask(client, lolData);
-}, 10 * 1000)
+}, 10 * 1000);
